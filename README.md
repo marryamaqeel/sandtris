@@ -8,8 +8,6 @@
 
 When blocks hit the ground, they lose their rigid structure and shatter into individual grains of sand, stacking naturally into pyramids and settling into gaps.
 
-> **Note:** [Insert a link to a GIF or screenshot of your gameplay here later!]
-
 ---
 
 ## ✨ Features & Functionalities
@@ -55,4 +53,4 @@ This project strictly follows Object-Oriented Programming principles. Every comp
 ### Installation Steps
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YourUsername/Sandtris.git
+   git clone https://github.com/marryamaqeel/Sandtris.git
