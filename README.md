@@ -6,8 +6,6 @@
 
 **Sandtris** is an innovative hybrid puzzle game built entirely from scratch in C++. It combines the classic rigid-block mechanics of Tetris with a dynamic, falling-sand physics engine driven by cellular automata. 
 
-When blocks hit the ground, they lose their rigid structure and shatter into individual grains of sand, stacking naturally into pyramids and settling into gaps.
-
 ---
 
 ## ✨ Features & Functionalities
