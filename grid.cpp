@@ -114,7 +114,7 @@ int grid::clearLines()
         {
             continue;
         }
-        sf::Color targetcolor = cell[(y*width) + 0].color;
+        sf::Color targetcolor = cell[y*width].color;
         bool isfull = true;
 
         for (int x = 0; x < width; x++)
@@ -140,6 +140,6 @@ int grid::clearLines()
 
 
     }
-    return lineclear;
+    return lineclear++;
 }
 
