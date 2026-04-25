@@ -3,19 +3,18 @@
 #include<iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-using namespace std;
 
 class GameObject
 {
-private:
+protected:
     int x;
     int y;
 public:
     GameObject(int startX, int startY);
-    void draw(sf::RenderWindow& window);
+    virtual void draw(sf::RenderWindow& window) = 0;// abstract class
     int getX() const;
     int getY() const;
-    ~GameObject();
+    virtual ~GameObject(); // prevents memory leak
 };
 
 #endif
