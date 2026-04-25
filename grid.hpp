@@ -16,7 +16,7 @@ public:
     grid(int w, int h);
     ~grid();
     void updatePhysics();
-    void setParticle(int x , int y , int id , sf::Color color);
+    void setParticle(int x , int y , int id , sf::Color color,sf::Color baseColor);
     int getParticleID(int x, int y) const;
     int clearLines();
     void draw(sf::RenderWindow& window) override; // override the gameobject draw function this function will callled

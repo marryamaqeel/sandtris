@@ -7,6 +7,7 @@ struct Particle
 {
     int id;
     sf::Color color;
+    sf::Color baseColor;
 };
 
 #endif

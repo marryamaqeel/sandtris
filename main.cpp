@@ -66,7 +66,7 @@ int main()
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    myGrid.setParticle(gridX + i, gridY + j, 1, sandColor);
+                    myGrid.setParticle(gridX + i, gridY + j, 1, sandColor,baseSand);
                 }
             }
         }

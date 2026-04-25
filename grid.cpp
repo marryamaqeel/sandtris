@@ -17,13 +17,14 @@ grid::grid(int w, int h) : GameObject(0,0)
 
 }
 
-void grid::setParticle(int x , int y , int id , sf::Color color)
+void grid::setParticle(int x , int y , int id , sf::Color color,sf::Color baseColor)
 {
     if ((x>= 0 && x < width) && (y>=0 && y < height))
     {
         int index = (y * width) + x;
         cell[index].color = color;
         cell[index].id = id;
+        cell[index].baseColor = baseColor;
     }
     else
     {
@@ -84,17 +85,17 @@ void grid::updatePhysics() // falling sand simulator cellular automata
                 // use random rand() % 2 to decide left or right
                 if (getParticleID(x,y+1) == 0) // down (gravity)
                 {
-                    setParticle(x,y+1,cell[index].id , cell[index].color);
+                    setParticle(x,y+1,cell[index].id , cell[index].color,cell[index].baseColor);
                     cell[index].id = 0;
                 }
                 else if(getParticleID(x - 1, y + 1) == 0) // slide left (if space)
                 {
-                    setParticle(x-1,y+1,cell[index].id , cell[index].color);
+                    setParticle(x-1,y+1,cell[index].id , cell[index].color,cell[index].baseColor);
                     cell[index].id = 0;
                 }
                 else if (getParticleID(x + 1, y + 1) == 0) // right slide (if space)
                 {
-                    setParticle(x+1,y+1,cell[index].id , cell[index].color);
+                    setParticle(x+1,y+1,cell[index].id , cell[index].color,cell[index].baseColor);
                     cell[index].id = 0;
                 }
 
@@ -114,13 +115,13 @@ int grid::clearLines()
         {
             continue;
         }
-        sf::Color targetcolor = cell[y*width].color;
+        sf::Color targetcolor = cell[y*width].baseColor;
         bool isfull = true;
 
         for (int x = 0; x < width; x++)
         {
             int index = (y*width) + x;
-            if (cell[index].id == 0 || cell[index].color != targetcolor)
+            if (cell[index].id == 0 || cell[index].baseColor != targetcolor)
             {
                 isfull =false;
                 break;
