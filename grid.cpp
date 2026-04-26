@@ -141,6 +141,6 @@ int grid::clearLines()
 
 
     }
-    return lineclear++;
+    return lineclear;
 }
 
