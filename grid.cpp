@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include "Particle.hpp"
+#include <vector>
+#include <queue>
 
 grid::grid(int w, int h) : GameObject(0,0)
 {
@@ -108,39 +110,82 @@ void grid::updatePhysics() // falling sand simulator cellular automata
 
 int grid::clearLines()
 {
-    int lineclear = 0;
+    int totalCleared = 0;
+
+    std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false));
+
+    // Directions for checking neighbors (Up, Down, Left, Right)
+    int dirX[] = {0, 0, -1, 1};
+    int dirY[] = {-1, 1, 0, 0};
+
     for (int y = 0; y < height; y++)
     {
-        if (getParticleID(0,y) == 0)
-        {
-            continue;
-        }
-        sf::Color targetcolor = cell[y*width].baseColor;
-        bool isfull = true;
-
         for (int x = 0; x < width; x++)
         {
-            int index = (y*width) + x;
-            if (cell[index].id == 0 || cell[index].baseColor != targetcolor)
-            {
-                isfull =false;
-                break;
-            }
-        }
-        
-        if (isfull == true)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                int index = (y*width) + x;
-                cell[index].id = 0;
-            }
-            lineclear++;
+            int index = (y * width) + x;
             
+            // Skip if not sand, or if we already checked it
+            if (cell[index].id != 1 || visited[x][y]) continue;
+
+            sf::Color targetColor = cell[index].baseColor;
+            std::vector<sf::Vector2i> currentGroup;
+            std::queue<sf::Vector2i> q;
+
+            // NEW: Track if this specific blob touches the walls
+            bool touchesLeftWall = false;
+            bool touchesRightWall = false;
+
+            // Start Flood Fill
+            q.push({x, y});
+            visited[x][y] = true;
+
+            while (!q.empty())
+            {
+                sf::Vector2i curr = q.front();
+                q.pop();
+                currentGroup.push_back(curr);
+
+                // If this particle is on the left edge, mark true
+                if (curr.x == 0) touchesLeftWall = true;
+                
+                // If this particle is on the right edge, mark true
+                if (curr.x == width - 1) touchesRightWall = true;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = curr.x + dirX[i];
+                    int ny = curr.y + dirY[i];
+
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    {
+                        int nIndex = (ny * width) + nx;
+                        
+                        // If unvisited, is sand, and has the exact SAME BASE COLOR
+                        if (!visited[nx][ny] && 
+                            cell[nIndex].id == 1 && 
+                            cell[nIndex].baseColor == targetColor)
+                        {
+                            visited[nx][ny] = true;
+                            q.push({nx, ny});
+                        }
+                    }
+                }
+            }
+
+            // NEW CONDITION: Does this single blob of color touch BOTH walls?
+            if (touchesLeftWall && touchesRightWall)
+            {
+                for (const auto& p : currentGroup)
+                {
+                    int pIndex = (p.y * width) + p.x;
+                    cell[pIndex].id = 0; // Turn back into empty space
+                }
+                totalCleared += currentGroup.size();
+            }
         }
-
-
     }
-    return lineclear;
+    
+    // Returns how many sand particles were cleared for your score
+    return totalCleared;
 }
 
