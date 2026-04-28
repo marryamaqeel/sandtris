@@ -6,7 +6,7 @@
 #include <vector>
 #include <queue>
 
-grid::grid(int w, int h) : GameObject(0,0)
+grid::grid(int w, int h) : GameObject(100,50)
 {
     width = w;
     height = h;
@@ -62,7 +62,7 @@ void  grid:: draw(sf::RenderWindow& window)
         for (int x = 0; x < width; x++)
         {
             int index = (y * width) + x;
-            if (cell[index].id == 1)
+            if (cell[index].id == 1 || cell[index].id == 3)
             {
                 rectangle.setFillColor(cell[index].color);
                 float x_cood = (x*cellsize) + getX();
@@ -70,6 +70,10 @@ void  grid:: draw(sf::RenderWindow& window)
                 rectangle.setPosition({x_cood, y_cood});
                 window.draw(rectangle);
             }
+            // if (cell[index].id==3)
+            // {
+
+            // }
         }
         
     }
@@ -77,6 +81,7 @@ void  grid:: draw(sf::RenderWindow& window)
 
 void grid::updatePhysics() // falling sand simulator cellular automata
 {
+    
     for (int y = height - 2; y >= 0 ; y--) // h - 2 bcz h - 1 is already floor cant go any further
     {
         for (int x = 0; x < width; x++)
@@ -112,10 +117,10 @@ int grid::clearLines()
 {
     int totalCleared = 0;
 
-    std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false));
+    std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false)); // every pixel on grid is false
 
     // Directions for checking neighbors (Up, Down, Left, Right)
-    int dirX[] = {0, 0, -1, 1};
+    int dirX[] = {0, 0, -1, 1}; 
     int dirY[] = {-1, 1, 0, 0};
 
     for (int y = 0; y < height; y++)
@@ -128,8 +133,8 @@ int grid::clearLines()
             if (cell[index].id != 1 || visited[x][y]) continue;
 
             sf::Color targetColor = cell[index].baseColor;
-            std::vector<sf::Vector2i> currentGroup;
-            std::queue<sf::Vector2i> q;
+            std::vector<sf::Vector2i> currentGroup; // store all we need to remove
+            std::queue<sf::Vector2i> q; // will check if same color it will pop it in current group
 
             // NEW: Track if this specific blob touches the walls
             bool touchesLeftWall = false;
@@ -178,7 +183,9 @@ int grid::clearLines()
                 for (const auto& p : currentGroup)
                 {
                     int pIndex = (p.y * width) + p.x;
-                    cell[pIndex].id = 0; // Turn back into empty space
+                    cell[pIndex].id = 3; // Turn back into empty space
+                    cell[pIndex].color = sf::Color::White;
+                    cell[pIndex].timer = 0.2;
                 }
                 totalCleared += currentGroup.size();
             }
@@ -188,4 +195,31 @@ int grid::clearLines()
     // Returns how many sand particles were cleared for your score
     return totalCleared;
 }
+void grid::updateTimers(float dt)
+{
+    for (int i = 0; i < width * height; i++)
+    {
+        if (cell[i].id == 3) // If it is in the "dying" white state
+        {
+            cell[i].timer -= dt; // Count down
+            
+            if (cell[i].timer <= 0.0f)
+            {
+                cell[i].id = 0; // Timer finished, make it disappear
+            }
+        }
+    }
+}
 
+bool grid::checkGameOver() const
+{
+    // Check every cell in row 5 (near the top)
+    for (int x = 0; x < width; x++) 
+    {
+        if (getParticleID(x, 5) == 1) 
+        {
+            return true; // Sand touched the danger zone!
+        }
+    }
+    return false; // We are safe
+}

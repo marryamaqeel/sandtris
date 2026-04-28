@@ -11,5 +11,7 @@ private:
 public:
     UIManager();
     void addScore(int points);
-    void renderUI(sf::RenderWindow& window);
+    void renderGameplayUI(sf::RenderWindow& window);
+    void renderMainMenu(sf::RenderWindow& window);
+    void renderGameOver(sf::RenderWindow& window);
 };

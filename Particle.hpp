@@ -8,6 +8,7 @@ struct Particle
     int id;
     sf::Color color;
     sf::Color baseColor;
+    float timer = 0.0f; 
 };
 
 #endif

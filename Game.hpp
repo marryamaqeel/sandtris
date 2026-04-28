@@ -4,6 +4,11 @@
 #include "Tetromino.hpp"
 #include "UIManager.hpp"
 
+enum class GameState {
+    MainMenu,
+    Playing,
+    GameOver
+};
 class Game {
 private:
     sf::RenderWindow window;
@@ -11,6 +16,8 @@ private:
     Tetromino* activeBlock;
     UIManager* ui;
     bool isRunning;
+    GameState currentState;
+    
 
 public:
     Game();

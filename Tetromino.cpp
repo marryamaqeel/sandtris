@@ -7,19 +7,17 @@
 sf::Color getRandomPastelColor() 
 {
     sf::Color pastels[7] = {
-        sf::Color(255, 0, 128),   // Hot Neon Pink
-        sf::Color(0, 255, 255),   // Electric Cyan
-        sf::Color(57, 255, 20),   // Toxic Lime Green
-        sf::Color(255, 255, 0),   // Laser Yellow
-        sf::Color(255, 80, 0),    // Vibrant Orange
-        sf::Color(160, 32, 240),  // Deep Electric Purple
-        sf::Color(255, 20, 20)      // Pastel Purple
+        sf::Color(0, 255, 255), 
+        sf::Color(255, 255, 0),
+        sf::Color(160, 32, 240),
+        sf::Color(57, 255, 20),
+        sf::Color(255, 20, 20)
     };
-    return pastels[rand() % 4];
+    return pastels[rand() % 2];
 }
 
 
-Tetromino::Tetromino() : GameObject(88,0)
+Tetromino::Tetromino() : GameObject(60,0)
 {
     int randomType = rand() % 7;
     currentShape = new Shape(randomType);
@@ -42,8 +40,8 @@ void Tetromino::draw(sf::RenderWindow& window)
         {
             if (currentShape->getPixel(x,y) == 1)
             {
-                float x_cood = ((x * BLOCK_SCALE) + getX()) * 4.0f;
-                float y_cood = ((y * BLOCK_SCALE) + getY()) * 4.0f;
+                float x_cood = 100 + (getX() + x * BLOCK_SCALE) * 4.0f;
+                float y_cood = 50  + (getY() + y * BLOCK_SCALE) * 4.0f;
                 rectangle.setFillColor(baseColor);
                 rectangle.setPosition({x_cood,y_cood});
 
@@ -123,7 +121,7 @@ void Tetromino::shatter(grid* playfield)
     delete currentShape;
     currentShape = new Shape(rand() % 7);
     baseColor = getRandomPastelColor();
-    this->x = 88;
+    this->x = 60;
     this->y = 0;
     
 }
@@ -179,10 +177,10 @@ void Tetromino::handleInput(const sf::Event& event, grid* playfield)
         // --- DOWN ARROW ---
         if (keyPressed->code == sf::Keyboard::Key::Down) 
         {
-            fallTimer = 10; 
+            fallTimer = 40; 
         }
 
-        if (keyPressed->code == sf::Keyboard::Key::Up) 
+        if (keyPressed->code == sf::Keyboard::Key::Space) 
         {
             // 1. Spin it!
             currentShape->rotateRight();
