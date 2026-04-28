@@ -181,6 +181,40 @@ void Tetromino::handleInput(const sf::Event& event, grid* playfield)
         {
             fallTimer = 10; 
         }
+
+        if (keyPressed->code == sf::Keyboard::Key::Up) 
+        {
+            // 1. Spin it!
+            currentShape->rotateRight();
+
+            // 2. Check if we just spun into a wall or sand
+            bool blocked = false;
+            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++) 
+            {
+                for (int ShapeX = 0; ShapeX < currentShape->getSize(); ShapeX++) 
+                {
+                    if (currentShape->getPixel(ShapeX, shapeY) == 1) 
+                    {
+                        // Check the whole block size
+                        for (int i = 0; i < BLOCK_SCALE; i++) {
+                            for (int j = 0; j < BLOCK_SCALE; j++) {
+                                int checkX = getX() + (ShapeX * BLOCK_SCALE) + i;
+                                int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
+                                
+                                if (playfield->getParticleID(checkX, checkY) != 0) {
+                                    blocked = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. If we hit a wall while spinning, undo the spin!
+            if (blocked) {
+                currentShape->rotateLeft();
+            }
+        }
     }
 }
 Tetromino::~Tetromino()

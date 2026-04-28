@@ -108,3 +108,37 @@ int Shape::getSize() const
     return size;
 }
 
+void Shape::rotateRight()
+{
+    int* tempMatrix = new int[size * size];
+
+    // Math magic to spin a 1D array 90 degrees clockwise
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+            tempMatrix[(x * size) + (size - 1 - y)] = Matrix[(y * size) + x];
+        }
+    }
+
+    // Copy it back to the main matrix
+    for (int i = 0; i < size * size; i++) {
+        Matrix[i] = tempMatrix[i];
+    }
+    delete[] tempMatrix;
+}
+
+void Shape::rotateLeft()
+{
+    int* tempMatrix = new int[size * size];
+
+    // Math magic to spin a 1D array 90 degrees COUNTER-clockwise
+    for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++) {
+            tempMatrix[((size - 1 - x) * size) + y] = Matrix[(y * size) + x];
+        }
+    }
+
+    for (int i = 0; i < size * size; i++) {
+        Matrix[i] = tempMatrix[i];
+    }
+    delete[] tempMatrix;
+}
