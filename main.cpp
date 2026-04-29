@@ -30,7 +30,7 @@ int main() {
 
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dx = -1; dx <= 1; dx++) {
-                    gameGrid.setParticle(gx + dx, gy + dy, 1, sf::Color::Yellow, sf::Color::Yellow);
+                    gameGrid.setParticle(gx + dx, gy + dy, 1, sf::Color::Cyan, sf::Color::Yellow);
                 }
             }
         }
