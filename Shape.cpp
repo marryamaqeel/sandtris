@@ -16,10 +16,10 @@ Shape::Shape(int type)
     case 0:
     {
         // square
-        for (int i = 0; i < size * size; i++)
-        {
-            Matrix[i] = 1;
-        }
+        Matrix[0] = 1;
+        Matrix[1] = 1;
+        Matrix[3] = 1;
+        Matrix[4] = 1;
         break;
         
     }

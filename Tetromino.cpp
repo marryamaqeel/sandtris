@@ -13,7 +13,7 @@ sf::Color getRandomPastelColor()
         sf::Color(57, 255, 20),
         sf::Color(255, 20, 20)
     };
-    return pastels[rand() % 2];
+    return pastels[rand() % 3];
 }
 
 
@@ -56,7 +56,7 @@ void Tetromino::update(grid* playfield)
 {
     int BLOCK_SCALE = 8;
     fallTimer++;
-    if( fallTimer > 1)
+    if( fallTimer > 0.5)
     {
         fallTimer = 0;
         for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++)
