@@ -1,34 +1,45 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
+#include "grid.h"
+#include <iostream>
+#include <vector>
+#include <queue>
 
-int main()
-{
-    // FIX 1: Curly braces around the dimensions
-    sf::RenderWindow window(sf::VideoMode({800, 600}), "SFML 3 Window");
+using namespace std;
 
-    while (window.isOpen())
-    {
-        // FIX 2: pollEvent now takes no arguments and returns an optional event
-        while (const std::optional event = window.pollEvent())
-        {
-            // FIX 3: Check event types using the new is<T>() syntax
-            if (event->is<sf::Event::Closed>())
-            {
+int main() {
+    const int GRID_WIDTH = 100;
+    const int GRID_HEIGHT = 100;
+    const int CELL_SIZE = 8;
+
+    sf::RenderWindow window(sf::VideoMode({800, 800}), "Sandtrix Test");
+    window.setFramerateLimit(60);
+
+    Grid gameGrid(GRID_WIDTH, GRID_HEIGHT);
+
+    while (window.isOpen()) {
+        while (const auto event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
+        }
 
-            // FIX 4: How to check for key presses in SFML 3
-            if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
-            {
-                if (keyPressed->code == sf::Keyboard::Key::Escape)
-                {
-                    window.close();
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+            sf::Vector2i mPos = sf::Mouse::getPosition(window);
+            int gx = mPos.x / CELL_SIZE;
+            int gy = mPos.y / CELL_SIZE;
+
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    gameGrid.setParticle(gx + dx, gy + dy, 1, sf::Color::Yellow, sf::Color::Yellow);
                 }
             }
         }
 
-        window.clear();
-        // window.draw(...);
+        gameGrid.updatePhysics();
+        gameGrid.clearLines();
+
+        window.clear(sf::Color(20, 20, 20));
+        gameGrid.draw(window);
         window.display();
     }
 
