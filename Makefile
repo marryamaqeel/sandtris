@@ -3,11 +3,34 @@ CXX      := g++
 # C++17 is required for std::optional used in SFML 3
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 
 
-# SFML Linker flags (Graphics, Window, and System are standard)
+# SFML Linker flags
 LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system
 
-# The name of your final executable
-TARGET   := Sandtris.exe
+# --- OS Detection & Specific Settings ---
+ifeq ($(OS),Windows_NT)
+    # Windows settings
+    TARGET := Sandtris.exe
+    RM     := rm -f
+else
+    # Unix-like systems (Linux, macOS)
+    UNAME_S := $(shell uname -s)
+    TARGET  := Sandtris
+    RM      := rm -f
+
+    ifeq ($(UNAME_S),Darwin)
+        # macOS specific: Homebrew include/lib paths
+        CXXFLAGS += -I/opt/homebrew/include -I/usr/local/include
+        LDFLAGS  += -L/opt/homebrew/lib -L/usr/local/lib -Wl,-rpath,/opt/homebrew/lib -Wl,-rpath,/usr/local/lib
+    else
+        # Linux specific (Option 2): Explicitly point to the locally built SFML 3
+        # This tells the compiler where the headers are
+        CXXFLAGS += -I/usr/local/include
+        # This tells the linker where the .so files are, AND tells the executable 
+        # where to look for them when you actually run the game (-rpath)
+        LDFLAGS  += -L/usr/local/lib -Wl,-rpath=/usr/local/lib
+    endif
+endif
+# ----------------------------------------
 
 # Automatically find all .cpp files in the directory
 SRC      := $(wildcard *.cpp)
@@ -27,7 +50,7 @@ $(TARGET): $(OBJ)
 
 # Rule to clean up compiled files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	$(RM) $(OBJ) $(TARGET)
 
 # Phony targets aren't actual files
 .PHONY: all clean
