@@ -7,7 +7,8 @@
 enum class GameState {
     MainMenu,
     Playing,
-    GameOver
+    GameOver,
+    Paused
 };
 class Game {
 private:
@@ -17,6 +18,7 @@ private:
     UIManager* ui;
     bool isRunning;
     GameState currentState;
+    int currentDifficulty;
     
 
 public:

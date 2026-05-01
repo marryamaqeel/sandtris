@@ -4,7 +4,7 @@ CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 
 
 # SFML Linker flags (Graphics, Window, and System are standard)
-LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system
+LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 # The name of your final executable
 TARGET   := Sandtris.exe

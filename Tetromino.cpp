@@ -4,24 +4,23 @@
 #include <cstdlib>
 #include <algorithm>
 
-sf::Color getRandomPastelColor() 
+sf::Color getRandomPastelColor(int limit) 
 {
-    sf::Color pastels[7] = {
-        sf::Color(0, 255, 255), 
-        sf::Color(255, 255, 0),
-        sf::Color(160, 32, 240),
-        sf::Color(57, 255, 20),
-        sf::Color(255, 20, 20)
+    sf::Color pastels[4] = {
+        sf::Color(0, 255, 255),   // Cyan
+        sf::Color(255, 255, 0),   // Yellow
+        sf::Color(255, 0, 128),   // Pink
+        sf::Color(57, 255, 20) 
     };
-    return pastels[rand() % 3];
+    return pastels[rand() % limit];
 }
 
 
-Tetromino::Tetromino() : GameObject(60,0)
+Tetromino::Tetromino(int difficulty) : GameObject(64,0)
 {
     int randomType = rand() % 7;
     currentShape = new Shape(randomType);
-    baseColor = getRandomPastelColor();
+    baseColor = getRandomPastelColor(difficulty);
     fallTimer = 0;
 }
 
@@ -52,11 +51,11 @@ void Tetromino::draw(sf::RenderWindow& window)
     }
 }
 
-void Tetromino::update(grid* playfield)
+void Tetromino::update(grid* playfield,int difficulty)
 {
     int BLOCK_SCALE = 8;
     fallTimer++;
-    if( fallTimer > 0.5)
+    if( fallTimer > 1)
     {
         fallTimer = 0;
         for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++)
@@ -70,7 +69,7 @@ void Tetromino::update(grid* playfield)
                         int checkY = getY() + (shapeY * BLOCK_SCALE) + BLOCK_SCALE; // +SCALE puts us exactly 1 pixel below the block
 
                         if (playfield->getParticleID(checkX, checkY) == 1 || playfield->getParticleID(checkX, checkY) == 2) {
-                            shatter(playfield);
+                            shatter(playfield,difficulty);
                             return;
                         }
                     }
@@ -82,7 +81,7 @@ void Tetromino::update(grid* playfield)
     }
 }
 
-void Tetromino::shatter(grid* playfield)
+void Tetromino::shatter(grid* playfield,int difficulty)
 {
     auto varyColor = [](sf::Color base)
     {
@@ -120,7 +119,7 @@ void Tetromino::shatter(grid* playfield)
 
     delete currentShape;
     currentShape = new Shape(rand() % 7);
-    baseColor = getRandomPastelColor();
+    baseColor = getRandomPastelColor(difficulty);
     this->x = 60;
     this->y = 0;
     
@@ -140,12 +139,14 @@ void Tetromino::handleInput(const sf::Event& event, grid* playfield)
                 {
                     if (currentShape->getPixel(ShapeX,shapeY) == 1) 
                     {
-                         for (int j = 0; j < BLOCK_SCALE; j++) {
-                            int checkX = getX() + (ShapeX * BLOCK_SCALE) - BLOCK_SCALE; // Look 1 full block left
-                            int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
-                            
-                            // If anything is there (1=sand, 2=wall), we can't move!
-                            if (playfield->getParticleID(checkX, checkY) != 0) return; 
+                        // FIX: Added 'i' loop to check the entire 8x8 destination block
+                        for (int i = 0; i < BLOCK_SCALE; i++) {
+                            for (int j = 0; j < BLOCK_SCALE; j++) {
+                                int checkX = getX() + (ShapeX * BLOCK_SCALE) - BLOCK_SCALE + i; 
+                                int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
+                                
+                                if (playfield->getParticleID(checkX, checkY) != 0) return; 
+                            }
                         }
                     }
                 }
@@ -162,18 +163,20 @@ void Tetromino::handleInput(const sf::Event& event, grid* playfield)
                 {
                     if (currentShape->getPixel(ShapeX,shapeY) == 1) 
                     {
-                        for (int j = 0; j < BLOCK_SCALE; j++) {
-                            int checkX = getX() + (ShapeX * BLOCK_SCALE) + BLOCK_SCALE; // Look 1 full block right
-                            int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
-                            
-                            if (playfield->getParticleID(checkX, checkY) != 0) return; 
+                        // FIX: Added 'i' loop to check the entire 8x8 destination block
+                        for (int i = 0; i < BLOCK_SCALE; i++) {
+                            for (int j = 0; j < BLOCK_SCALE; j++) {
+                                int checkX = getX() + (ShapeX * BLOCK_SCALE) + BLOCK_SCALE + i; 
+                                int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
+                                
+                                if (playfield->getParticleID(checkX, checkY) != 0) return; 
+                            }
                         }
                     }
                 }
             }
            this->x += BLOCK_SCALE; 
         }
-
         // --- DOWN ARROW ---
         if (keyPressed->code == sf::Keyboard::Key::Down) 
         {

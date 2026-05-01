@@ -70,10 +70,6 @@ void  grid:: draw(sf::RenderWindow& window)
                 rectangle.setPosition({x_cood, y_cood});
                 window.draw(rectangle);
             }
-            // if (cell[index].id==3)
-            // {
-
-            // }
         }
         
     }

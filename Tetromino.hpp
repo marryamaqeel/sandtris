@@ -14,10 +14,10 @@ private:
     sf:: Color baseColor;
     int fallTimer;
 public:
-    Tetromino();
+    Tetromino(int difficulty);
     ~Tetromino();
-    void update(grid* playfield);
-    void shatter(grid* playfield);
+    void update(grid* playfield,int difficulty);
+    void shatter(grid* playfield,int difficulty);
     void draw(sf::RenderWindow& window) override;
     void handleInput(const sf::Event& event,grid* playfield);
 };
