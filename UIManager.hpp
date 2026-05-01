@@ -17,16 +17,17 @@ private:
     sf::Text HardText;
     sf::Text titleText;
     int currentScore;
-    int highScore;
+    int highScore[3];
 
 public:
     UIManager();
-    void addScore(int points);
+    void addScore(int points,int difficulty);
     void renderGameplayUI(sf::RenderWindow& window);
     void renderMainMenu(sf::RenderWindow& window);
-    void renderGameOver(sf::RenderWindow& window);
-    void saveHighScore();
+    void renderGameOver(sf::RenderWindow& window , int difficulty);
+    void saveHighScore(int difficulty);
     void resetScore();
     void renderPause(sf::RenderWindow& window);
     int handleMenuClick(sf::Vector2i mousePos);
+    void updateHighScoreDisplay(int difficulty);
 };

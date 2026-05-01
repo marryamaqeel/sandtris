@@ -52,6 +52,7 @@ void Game::processEvents()
                     if (diff > 0) // If they clicked a valid button!
                     {
                         currentDifficulty = diff;
+                        ui->updateHighScoreDisplay(currentDifficulty);
                         
                         // Delete the old block and spawn a NEW one with the correct difficulty!
                         delete activeBlock;
@@ -133,12 +134,12 @@ void Game::update()
         int line = playfield->clearLines();
         if (line > 0)
         {
-            ui->addScore(line * 10);
+            ui->addScore(line * 10, currentDifficulty);
         }
 
         if (playfield->checkGameOver() == true) 
         {
-            ui->saveHighScore();
+            ui->saveHighScore(currentDifficulty);
             currentState = GameState::GameOver;
         }
     }
@@ -164,7 +165,7 @@ void Game::render()
         ui->renderPause(window);
     }
     else if (currentState == GameState::GameOver) {
-        ui->renderGameOver(window); 
+        ui->renderGameOver(window,currentDifficulty); 
     }
     window.display();
 }

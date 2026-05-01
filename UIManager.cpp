@@ -15,16 +15,20 @@ UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText
     std::ifstream loadfile("highscore.txt");
     if (loadfile.is_open())
     {
-        loadfile >> highScore;
+        loadfile >> highScore[0] >> highScore[1] >> highScore[2];
         loadfile.close();
     }
     else
     {
-        highScore = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            highScore[i] = 0;
+        }
+        
     }
 
     highScoreText.setFont(font);
-    highScoreText.setString("High Score: " + std::to_string(highScore));
+    highScoreText.setString("High Score: " + std::to_string(highScore[0]));
     highScoreText.setFillColor(sf::Color(255, 215, 0));
     highScoreText.setPosition({450.0f, 10.0f});
 
@@ -96,24 +100,25 @@ UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText
     HardText.setPosition(hardButton.getPosition());
 }
 
-void UIManager::saveHighScore()
+void UIManager::saveHighScore(int difficulty)
 {
     std::ofstream savefile("highscore.txt");
     if (savefile.is_open())
     {
-        savefile << highScore;
+        savefile << highScore[0] << " "<< highScore[1] <<" "<< highScore[2];
         savefile.close();
     }
 }
-void UIManager::addScore(int points)
+void UIManager::addScore(int points,int difficulty)
 {
     currentScore += points;
     scoreText.setString("Score: " + std::to_string(currentScore));
 
-    if (currentScore > highScore)
+    int index = difficulty - 2;
+    if (currentScore > highScore[index])
     {
-        highScore = currentScore;
-        highScoreText.setString("High Score: " + std::to_string(highScore));
+        highScore[index] = currentScore;
+        highScoreText.setString("High Score: " + std::to_string(highScore[index]));
     }
 }
 
@@ -152,7 +157,7 @@ void UIManager::renderMainMenu(sf::RenderWindow &window)
     window.draw(medText);
 }
 
-void UIManager::renderGameOver(sf::RenderWindow &window)
+void UIManager::renderGameOver(sf::RenderWindow &window , int difficulty)
 {
 
     sf::RectangleShape overlay;
@@ -185,7 +190,7 @@ void UIManager::renderGameOver(sf::RenderWindow &window)
     // Place slightly BELOW the center
     finalScoreText.setPosition({window.getSize().x / 2.0f, (window.getSize().y / 2.0f) + 40.0f});
 
-    sf::Text highText(font, "HIGH SCORE: " + std::to_string(highScore), 40);
+    sf::Text highText(font, "HIGH SCORE: " + std::to_string(highScore[difficulty - 2]), 40);
     highText.setFillColor(sf::Color::Cyan);
     sf::FloatRect bounds3 = highText.getLocalBounds();
     highText.setOrigin({bounds3.position.x + (bounds3.size.x / 2.0f),
@@ -231,4 +236,10 @@ int UIManager::handleMenuClick(sf::Vector2i mousepos)
     if (hardButton.getGlobalBounds().contains(pos)) return 4; // 4 Colors
     
     return 0;
+}
+
+void UIManager::updateHighScoreDisplay(int difficulty) 
+{
+    int index = difficulty - 2;
+    highScoreText.setString("High Score: " + std::to_string(highScore[index]));
 }
