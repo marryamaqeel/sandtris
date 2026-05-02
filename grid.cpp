@@ -1,132 +1,215 @@
-#include "grid.h"
+#include "grid.hpp"
+#include <iostream>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include "Particle.hpp"
 #include <vector>
 #include <queue>
 
-using namespace std;
-
-static const int CELL_SIZE = 8;
-
-Grid::Grid(int w, int h) {
+grid::grid(int w, int h) : GameObject(100,50){
     width = w;
-    height =h;
-    cells = new Particle[width * height];
-    for (int i = 0; i < width * height; i++) {
-        cells[i] = Particle(); 
+    height = h;
+    cell = new Particle[width * height];
+    for (int i = 0; i < width*height; i++)
+    {
+        cell[i].id = 0;
+    }
+    
+
+}
+
+void grid::setParticle(int x , int y , int id , sf::Color color,sf::Color baseColor){
+    if ((x>= 0 && x < width) && (y>=0 && y < height))
+    {
+        int index = (y * width) + x;
+        cell[index].color = color;
+        cell[index].id = id;
+        cell[index].baseColor = baseColor;
+    }
+    else
+    {
+        return;
     }
 }
 
-Grid::~Grid() {
-    delete[] cells;
+int grid::getParticleID(int x, int y)const{
+    if( x>=0 && x <width && y>= 0 && y < height)
+    {
+        int index = (y * width) + x;
+        return cell[index].id;
+    }
+    else
+    {
+        return 2;
+    }
+}
+grid::~grid()
+{
+    delete[] cell;
 }
 
-void Grid::updatePhysics() {
-    for (int y = height - 2; y >= 0; y--) {
+void  grid:: draw(sf::RenderWindow& window){
+    sf::RectangleShape rectangle;
+    float cellsize = 4.0f;
+    rectangle.setSize(sf::Vector2f{cellsize, cellsize}); // making sand 4x4 
 
-        bool leftPriority = (y % 2 == 0);
-
-        for (int x = 0; x < width; x++) {
-            int idx = y * width + x;
-            if (cells[idx].id == 0) 
-                continue;
-
-            int below = (y + 1) * width + x;
-            int bLeft = (y + 1) * width + (x - 1);
-            int bRight = (y + 1) * width + (x + 1);
-
-            if (cells[below].id == 0) {
-                swap(cells[idx], cells[below]);
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int index = (y * width) + x;
+            if (cell[index].id == 1 || cell[index].id == 3)
+            {
+                rectangle.setFillColor(cell[index].color);
+                float x_cood = (x*cellsize) + getX();
+                float y_cood = (y*cellsize) + getY();
+                rectangle.setPosition({x_cood, y_cood});
+                window.draw(rectangle);
             }
-            else if (leftPriority) {
-                if (x > 0 && cells[bLeft].id == 0) 
-                    swap(cells[idx], cells[bLeft]);
-                else if (x < width - 1 && cells[bRight].id == 0)
-                    swap(cells[idx], cells[bRight]);
-            }
-            else {
-                if (x < width - 1 && cells[bRight].id == 0) 
-                    swap(cells[idx], cells[bRight]);
-                else if (x > 0 && cells[bLeft].id == 0)
-                    swap(cells[idx], cells[bLeft]);
-            }
+
         }
+        
     }
 }
 
-int Grid::clearLines() {
-    int linesCleared = 0;
-    for (int y = height - 1; y >= 0; y--) {
-        bool isFull = true;
-        for (int x = 0; x < width; x++) {
-            if (cells[y * width + x].id == 0) {
-                isFull = false;
-                break;
+void grid::updatePhysics() // falling sand simulator cellular automata
+{
+    
+    for (int y = height - 2; y >= 0 ; y--) // h - 2 bcz h - 1 is already floor cant go any further
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int index = (y*width) + x;
+            if (cell[index].id == 1)
+            {
+                if (getParticleID(x,y+1) == 0) // down (gravity)
+                {
+                    setParticle(x,y+1,cell[index].id , cell[index].color,cell[index].baseColor);
+                    cell[index].id = 0;
+                }
+                else if(getParticleID(x - 1, y + 1) == 0) // slide left (if space)
+                {
+                    setParticle(x-1,y+1,cell[index].id , cell[index].color,cell[index].baseColor);
+                    cell[index].id = 0;
+                }
+                else if (getParticleID(x + 1, y + 1) == 0) // right slide (if space)
+                {
+                    setParticle(x+1,y+1,cell[index].id , cell[index].color,cell[index].baseColor);
+                    cell[index].id = 0;
+                }
+
             }
         }
+        
+    }
+    
+}
 
-        if (isFull) {
-            linesCleared++;
-            queue<pair<int, int>> q;
-            vector<bool> visited(width * height, false);
+int grid::clearLines(){
+    int totalCleared = 0;
 
-            for (int x = 0; x < width; x++) {
-                q.push({x, y});
-                visited[y * width + x] = true;
-            }
+    std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false)); // every pixel on grid is false
 
-            while (!q.empty()) {
-                pair<int, int> curr = q.front();
+    // Directions for checking neighbors (Up, Down, Left, Right)
+    int dirX[] = {0, 0, -1, 1}; 
+    int dirY[] = {-1, 1, 0, 0};
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int index = (y * width) + x;
+            
+            // Skip if not sand, or if we already checked it
+            if (cell[index].id != 1 || visited[x][y]) continue;
+
+            sf::Color targetColor = cell[index].baseColor;
+            std::vector<sf::Vector2i> currentGroup; // store all we need to remove
+            std::queue<sf::Vector2i> q; // will check if same color it will pop it in current group
+
+            // NEW: Track if this specific blob touches the walls
+            bool touchesLeftWall = false;
+            bool touchesRightWall = false;
+
+            // Start Flood Fill
+            q.push({x, y});
+            visited[x][y] = true;
+
+            while (!q.empty())
+            {
+                sf::Vector2i curr = q.front();
                 q.pop();
+                currentGroup.push_back(curr);
 
-                int cx = curr.first;
-                int cy = curr.second;
-                int currentID = cells[cy * width + cx].id;
+                // If this particle is on the left edge, mark true
+                if (curr.x == 0) touchesLeftWall = true;
                 
-                cells[cy * width + cx] = Particle();
+                // If this particle is on the right edge, mark true
+                if (curr.x == width - 1) touchesRightWall = true;
 
-                int dx[] = {0, 0, 1, -1};
-                int dy[] = {1, -1, 0, 0};
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = curr.x + dirX[i];
+                    int ny = curr.y + dirY[i];
 
-                for (int i = 0; i < 4; i++) {
-                    int nx = cx + dx[i];
-                    int ny = cy + dy[i];
-
-                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                        int nIdx = ny * width + nx;
-                        if (!visited[nIdx] && cells[nIdx].id != 0 && cells[nIdx].id == currentID) {
-                            visited[nIdx] = true;
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    {
+                        int nIndex = (ny * width) + nx;
+                        
+                        // If unvisited, is sand, and has the exact SAME BASE COLOR
+                        if (!visited[nx][ny] && 
+                            cell[nIndex].id == 1 && 
+                            cell[nIndex].baseColor == targetColor)
+                        {
+                            visited[nx][ny] = true;
                             q.push({nx, ny});
                         }
                     }
                 }
             }
-        }
-    }
-    return linesCleared;
-}
 
-void Grid::setParticle(int x, int y, int id, sf::Color color, sf::Color baseColor) {
-    if (x < 0 || x >= width || y < 0 || y >= height) return;
-    int idx = y * width + x;
-    cells[idx].id = id;
-    cells[idx].color = color;
-    cells[idx].baseColor = baseColor;
-}
-
-Particle Grid::getParticle(int x, int y) const {
-    if (x < 0 || x >= width || y < 0 || y >= height) return Particle();
-    return cells[y * width + x];
-}
-
-void Grid::draw(sf::RenderWindow& window) {
-    sf::RectangleShape rect(sf::Vector2f(CELL_SIZE - 1.f, CELL_SIZE - 1.f));
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int idx = y * width + x;
-            if (cells[idx].id != 0) {
-                rect.setFillColor(cells[idx].color);
-                rect.setPosition({(float)x * CELL_SIZE, (float)y * CELL_SIZE});
-                window.draw(rect);
+            // NEW CONDITION: Does this single blob of color touch BOTH walls?
+            if (touchesLeftWall && touchesRightWall)
+            {
+                for (const auto& p : currentGroup)
+                {
+                    int pIndex = (p.y * width) + p.x;
+                    cell[pIndex].id = 3; // Turn back into empty space
+                    cell[pIndex].color = sf::Color::White;
+                    cell[pIndex].timer = 0.2;
+                }
+                totalCleared += currentGroup.size();
             }
         }
     }
+    
+    // Returns how many sand particles were cleared for your score
+    return totalCleared;
+}
+void grid::updateTimers(float dt){
+    for (int i = 0; i < width * height; i++)
+    {
+        if (cell[i].id == 3) // If it is in the "dying" white state
+        {
+            cell[i].timer -= dt; // Count down
+            
+            if (cell[i].timer <= 0.0f)
+            {
+                cell[i].id = 0; // Timer finished, make it disappear
+            }
+        }
+    }
+}
+
+bool grid::checkGameOver() const 
+{
+    // Check every cell in row 5 (near the top)
+    for (int x = 0; x < width; x++) 
+    {
+        if (getParticleID(x, 5) == 1) 
+        {
+            return true; // Sand touched the danger zone!
+        }
+    }
+    return false; // We are safe
 }
