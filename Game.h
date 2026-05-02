@@ -1,9 +1,15 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Grid.h"
+#include "grid.h"
 #include "Tetromino.h"
 #include "UIManager.h"
 
+enum class GameState {
+    MainMenu,
+    Playing,
+    GameOver,
+    Paused
+};
 class Game {
 private:
     sf::RenderWindow window;
@@ -11,6 +17,8 @@ private:
     Tetromino* activeBlock;
     UIManager* ui;
     bool isRunning;
+     GameState currentState;
+    int currentDifficulty;
 
 public:
     Game();
