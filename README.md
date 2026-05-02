@@ -4,30 +4,31 @@
 ![SFML](https://img.shields.io/badge/SFML_3.0-8CC445?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![Algorithm](https://img.shields.io/badge/Algorithm-BFS-blueviolet?style=for-the-badge)
 
-**Sandtris** is a high-performance, Object-Oriented game engine built in C++. It reinvents the classic Tetris formula by introducing real-time **Cellular Automata** physics. In this game, Tetrominoes are not just rigid blocks; they are composed of thousands of individual sand particles that shatter, cascade, and settle into gaps upon impact.
+**Sandtris** is a high-performance C++ game engine that reimagines the classic Tetris formula through the lens of real-time **Cellular Automata** physics. In this engine, blocks are not rigid shapes; they are composed of thousands of individual sand particles that react to gravity, slide down slopes, and stack into natural pyramids upon impact.
 
 ---
 
-## 🚀 Technical Highlights
+## 🌟 Technical Highlights
 
-### 1. Real-Time Particle Simulation
-The engine utilizes a custom-built physics simulation based on **Cellular Automata**. 
-*   **Bottom-Up Traversal:** Updates the grid from the bottom row upward to prevent "teleportation" bugs and simulate realistic gravity.
-*   **Diagonal Sliding:** Sand particles check their down-left and down-right neighbors, allowing them to form natural pyramids and slide down slopes.
+### 1. Real-Time Particle Physics
+The heart of the engine is a custom **Cellular Automata** simulation. 
+*   **Bottom-Up Traversal:** The grid is processed from the bottom row upward using 1D-array mathematical indexing to prevent "teleportation" bugs and simulate realistic gravity.
+*   **Diagonal Sliding:** Every grain of sand checks its immediate neighbors to calculate diagonal sliding, allowing sand to pour into gaps and form realistic piles.
 
-### 2. BFS Flood-Fill Line Clearing
-Unlike traditional Tetris, Sandtris uses a **Breadth-First Search (BFS)** algorithm to detect line clears.
+### 2. BFS Color-Blob Line Clearing
+Unlike traditional Tetris, Sandtris uses a custom **Breadth-First Search (BFS)** algorithm to detect line clears.
 *   **Monolithic Blobs:** The engine searches for contiguous clusters of the same color. 
-*   **Clear Condition:** A blob is cleared only if it manages to touch both the **Left and Right walls** of the play area simultaneously.
-*   **Visual Feedback:** Particles enter a "dying" state, turning white before vanishing to provide satisfying player feedback.
+*   **Clear Condition:** A blob is cleared only if a single contiguous mass of color manages to touch both the **Left and Right walls** of the play area simultaneously.
+*   **Visual Polish:** Cleared particles enter a "dying" state (flashing white) using a delta-time timer before vanishing.
 
-### 3. Advanced OOP & Memory Management
-*   **Abstract Architecture:** Uses a `GameObject` base class with virtual rendering methods to manage the physics `Grid` and the player-controlled `Tetromino`.
-*   **Manual Memory Control:** To demonstrate low-level proficiency, the project avoids standard containers in favor of **Raw Dynamic Pointers** (`new`/`delete`) and custom class destructors to ensure zero memory leaks.
+### 3. Advanced OOP Architecture & Memory
+*   **Inheritance & Polymorphism:** Utilizes an abstract `GameObject` base class to standardized positioning and rendering across the `Grid` and `Tetromino` classes.
+*   **Manual Memory Management:** To demonstrate mastery of memory allocation, the engine avoids standard containers in favor of **Raw Dynamic Pointers** (`new`/`delete`) and custom class destructors to ensure zero memory leaks.
 
-### 4. Audio & Persistent Data
-*   **Dynamic Sound Engine:** Hardware-accelerated audio using SFML 3's new audio pipeline for shattering sounds and line-clear chimes.
-*   **Persistent High Scores:** Implements C++ File I/O (`<fstream>`) to track **three independent high scores** (Easy, Medium, Hard) saved in a local `highscores.txt` file.
+### 4. Dynamic UI & Persistent Data
+*   **Neon Arcade Interface:** Features a fully interactive UI built with SFML 3, including a Main Menu with difficulty selection, a Pause state, and a Game Over screen.
+*   **Independent High Scores:** Utilizes C++ File I/O (`<fstream>`) to track and save **three separate high scores** (Easy, Medium, Hard) to a local `highscore.txt` file.
+*   **Hardware-Accelerated Audio:** A multi-channel sound engine for menu music, rotation clicks, and line-clear chimes.
 
 ---
 
@@ -35,20 +36,32 @@ Unlike traditional Tetris, Sandtris uses a **Breadth-First Search (BFS)** algori
 
 ### Main Menu
 *   **Mouse Click:** Select Difficulty (Easy: 2 Colors, Medium: 3 Colors, Hard: 4 Colors).
+*   **Keyboard 1, 2, 3:** Difficulty shortcuts.
 
 ### Gameplay
 *   **Left / Right Arrows:** Move the falling block.
-*   **Space:** Rotate the block 90 degrees.
+*   **Up Arrow / Space:** Rotate the block 90 degrees.
 *   **Down Arrow (Hold):** Smooth Fast-Fall.
 *   **ESC:** Pause the game.
 
-### Game Over
-*   **Enter (Game Over):** Quick Restart.
+### Pause / Game Over
+*   **ESC (Paused):** Resume gameplay.
+*   **Enter (Game Over):** Quick Restart on current difficulty.
 *   **ESC (Game Over):** Return to Main Menu.
 
 ---
 
-## 🛠️ Build and Run
+## 👥 The Development Team
+This project was developed as a collaborative Object-Oriented Programming assignment:
+
+*   **[Marryam Aqeel] (Group Lead)**: UI Architecture & State Machine, BFS Clearing Logic Integration, Persistent File I/O (High Scores), and Audio Engine.
+*   **[Emaan Arif]**: Physics Engine Development, 1D-Pointer Grid Management, and Particle logic.
+*   **[Mahlaka Yaseen]**: Tetromino Matrix Logic, Shape Generation, and Matrix Rotation algorithms.
+*   **[M.Mohid Hassan]**: Core Game Loop, GameObject Abstract Architecture, and Input Handling.
+
+---
+
+## 🚀 Build and Run
 
 ### Prerequisites
 *   **SFML 3.x** Library.
@@ -60,10 +73,3 @@ Open your terminal in the project directory and run:
 ```bash
 mingw32-make clean
 mingw32-make
-
-
-## 👥 The Team
-*   **[Marryam Aqeel] (Group Lead)**: UI Architecture, High Score Persistent Data, Dynamic Difficulty Scaling, Sound Engine Integration, and BFS Optimization.
-*   **[Emaan Arif]**: Physics Engine Development & Particle Logic (`Grid` & `Particle` classes).
-*   **[Mahlaka Yaseen]**: Tetromino Matrix Logic & Shape Generation (`Tetromino` & `Shape` classes).
-*   **[M.Mohid Hassan]**: Core Game Loop & Abstract Architecture (`Game` & `GameObject` classes).
