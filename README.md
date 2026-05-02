@@ -52,12 +52,12 @@ Unlike traditional Tetris, Sandtris uses a custom **Breadth-First Search (BFS)**
 ---
 
 ## 👥 The Development Team
-This project was developed as a collaborative Object-Oriented Programming assignment:
+This project was developed as a collaborative Object-Oriented Programming Final Project:
 
-*   **[Marryam Aqeel] (Group Lead)**: UI Architecture & State Machine, BFS Clearing Logic Integration, Persistent File I/O (High Scores), and Audio Engine.
-*   **[Emaan Arif]**: Physics Engine Development, 1D-Pointer Grid Management, and Particle logic.
-*   **[Mahlaka Yaseen]**: Tetromino Matrix Logic, Shape Generation, and Matrix Rotation algorithms.
-*   **[M.Mohid Hassan]**: Core Game Loop, GameObject Abstract Architecture, and Input Handling.
+*   **Marryam Aqeel (Group Lead)**: UI Architecture & State Machine, BFS Clearing Logic Integration, Persistent File I/O (High Scores), and Audio Engine.
+*   **Emaan Arif**: Physics Engine Development, 1D-Pointer Grid Management, and Particle logic.
+*   **Mahlaka Yaseen**: Tetromino Matrix Logic, Shape Generation, and Matrix Rotation algorithms.
+*   **M.Mohid Hassan**: Core Game Loop, GameObject Abstract Architecture, and Input Handling.
 
 ---
 
