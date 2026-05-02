@@ -1,67 +1,63 @@
-# 🧱⏳ Sandtris
+# 🧱⏳ Sandtris: A Physics-Puzzle Engine
 
 ![C++](https://img.shields.io/badge/C++17-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
-![SFML](https://img.shields.io/badge/SFML_3-8CC445?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![SFML](https://img.shields.io/badge/SFML_3.0-8CC445?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![Algorithm](https://img.shields.io/badge/Algorithm-BFS-blueviolet?style=for-the-badge)
 
-**Sandtris** is a high-performance C++ game engine that reimagines the classic Tetris formula through the lens of cellular automata physics. Unlike standard puzzle games, every block in Sandtris is composed of individual sand particles that react to gravity, slide down slopes, and stack into natural pyramids in real-time.
+**Sandtris** is a high-performance, Object-Oriented game engine built in C++. It reinvents the classic Tetris formula by introducing real-time **Cellular Automata** physics. In this game, Tetrominoes are not just rigid blocks; they are composed of thousands of individual sand particles that shatter, cascade, and settle into gaps upon impact.
 
 ---
 
-## 🌟 Technical Overview & Features
+## 🚀 Technical Highlights
 
-### 1. Cellular Automata Physics
-The heart of the game is a bottom-up physics engine. Every grain of sand calculates its movement based on its immediate neighbors, allowing for realistic sliding, stacking, and crumbling.
-*   **Optimization:** Uses a 1D pointer-based array to maximize CPU cache hits and ensure smooth 60 FPS performance even with thousands of active particles.
+### 1. Real-Time Particle Simulation
+The engine utilizes a custom-built physics simulation based on **Cellular Automata**. 
+*   **Bottom-Up Traversal:** Updates the grid from the bottom row upward to prevent "teleportation" bugs and simulate realistic gravity.
+*   **Diagonal Sliding:** Sand particles check their down-left and down-right neighbors, allowing them to form natural pyramids and slide down slopes.
 
-### 2. BFS Color-Matching Algorithm
-Instead of simple row clearing, this project implements a **Breadth-First Search (BFS)** algorithm to detect contiguous blobs of color. 
-*   **Logic:** When a block shatters, the engine uses a queue-based Flood Fill to identify if a single-color mass touches both the left and right walls of the play area simultaneously.
-*   **Visual Polish:** Cleared particles enter a "dying" state (turning white) before vanishing, providing satisfying visual feedback.
+### 2. BFS Flood-Fill Line Clearing
+Unlike traditional Tetris, Sandtris uses a **Breadth-First Search (BFS)** algorithm to detect line clears.
+*   **Monolithic Blobs:** The engine searches for contiguous clusters of the same color. 
+*   **Clear Condition:** A blob is cleared only if it manages to touch both the **Left and Right walls** of the play area simultaneously.
+*   **Visual Feedback:** Particles enter a "dying" state, turning white before vanishing to provide satisfying player feedback.
 
-### 3. Advanced OOP Architecture
-*   **Inheritance & Polymorphism:** Utilizes an abstract `GameObject` base class to standardize rendering and positioning for both the physics `Grid` and the falling `Tetromino`.
-*   **Manual Memory Management:** To demonstrate mastery of C++ memory, the project avoids standard vectors in favor of raw dynamic pointers (`new`/`delete`) with strict destructor management to prevent memory leaks.
+### 3. Advanced OOP & Memory Management
+*   **Abstract Architecture:** Uses a `GameObject` base class with virtual rendering methods to manage the physics `Grid` and the player-controlled `Tetromino`.
+*   **Manual Memory Control:** To demonstrate low-level proficiency, the project avoids standard containers in favor of **Raw Dynamic Pointers** (`new`/`delete`) and custom class destructors to ensure zero memory leaks.
 
-### 4. Difficulty & Independent High Scores
-The game features a custom neon-themed UI with dynamic difficulty scaling. The game tracks **3 separate High Scores**, automatically saving and loading them via C++ File I/O (`<fstream>`) to a local `highscores.txt` file based on the selected mode:
-*   🟢 **Easy (Default):** 2 Colors (Cyan & Yellow). High probability of BFS clearing. *Tracks Easy High Score.*
-*   🟡 **Medium:** 3 Colors. *Tracks Medium High Score.*
-*   🔴 **Hard:** 4 Colors. Requires strategic placement and faster reactions. *Tracks Hard High Score.*
+### 4. Audio & Persistent Data
+*   **Dynamic Sound Engine:** Hardware-accelerated audio using SFML 3's new audio pipeline for shattering sounds and line-clear chimes.
+*   **Persistent High Scores:** Implements C++ File I/O (`<fstream>`) to track **three independent high scores** (Easy, Medium, Hard) saved in a local `highscores.txt` file.
 
 ---
 
 ## 🎮 Controls
 
 ### Main Menu
-*   **Left Click:** Select Difficulty Buttons (Easy, Medium, or Hard).
-*   **Num Keys 1, 2, 3:** Keyboard shortcuts for difficulty selection.
+*   **Mouse Click:** Select Difficulty (Easy: 2 Colors, Medium: 3 Colors, Hard: 4 Colors).
 
 ### Gameplay
-*   **Left / Right Arrows:** Move the block.
-*   **Up Arrow:** Rotate the block 90 degrees.
-*   **Down Arrow (Hold):** Accelerate gravity (Fast Fall).
+*   **Left / Right Arrows:** Move the falling block.
+*   **Up Arrow / Space:** Rotate the block 90 degrees.
+*   **Down Arrow (Hold):** Smooth Fast-Fall.
 *   **ESC:** Pause the game.
 
-### Game Over / Pause
-*   **Enter (Game Over):** Restart on current difficulty.
+### Pause / Game Over
+*   **Enter (Game Over):** Quick Restart.
 *   **ESC (Game Over):** Return to Main Menu.
-*   **ESC (Playing):** Toggle Pause.
+*   **M (Paused):** Return to Main Menu.
 
 ---
 
-## 🚀 Installation and Build
+## 🛠️ Build and Run
 
 ### Prerequisites
-*   **SFML 3.x** (Latest Release).
-*   A C++17 compatible compiler (e.g., MinGW-w64).
+*   **SFML 3.x** Library.
+*   C++17 compatible compiler (MinGW-w64 recommended for Windows).
 
-### Build Instructions
-This project includes a `Makefile` for easy compilation. Open your terminal in the project directory and run:
+### Compilation
+Open your terminal in the project directory and run:
 
 ```bash
-# Clean previous builds
 mingw32-make clean
-
-# Compile the engine
 mingw32-make

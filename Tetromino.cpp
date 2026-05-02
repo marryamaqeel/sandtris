@@ -54,6 +54,12 @@ void Tetromino::draw(sf::RenderWindow& window)
 void Tetromino::update(grid* playfield,int difficulty,UIManager* ui)
 {
     int BLOCK_SCALE = 8;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) 
+    {
+        fallTimer += 20; // Massive boost to the timer to trigger falling every frame!
+    }
+
     fallTimer++;
     if( fallTimer > 1)
     {
@@ -178,12 +184,7 @@ void Tetromino::handleInput(const sf::Event& event, grid* playfield)
             }
            this->x += BLOCK_SCALE; 
         }
-        // --- DOWN ARROW ---
-        if (keyPressed->code == sf::Keyboard::Key::Down) 
-        {
-            fallTimer = 40; 
-        }
-
+        
         if (keyPressed->code == sf::Keyboard::Key::Space) 
         {
             // 1. Spin it!
