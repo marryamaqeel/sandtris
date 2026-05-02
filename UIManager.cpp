@@ -1,5 +1,3 @@
-#ifndef UIMANAGER_HPP
-#define UIMANAGER_HPP
 #include "UIManager.h"
 #include <iostream>
 
@@ -313,5 +311,3 @@ void UIManager::playClearSounnd()
 {
     clearSound.play();
 }
-
-#endif

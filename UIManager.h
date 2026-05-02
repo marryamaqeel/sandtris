@@ -1,3 +1,5 @@
+#ifndef UIMANAGER_HPP
+#define UIMANAGER_HPP
 #include<SFML/Graphics.hpp>
 #include <string>
 #include<iostream>
@@ -43,3 +45,5 @@ public:
     void stopAllMusic();
     void playClearSounnd();
 };
+
+#endif
