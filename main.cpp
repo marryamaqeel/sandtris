@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "grid.h"
+#include "Game.h"
 #include <iostream>
 #include <vector>
 #include <queue>

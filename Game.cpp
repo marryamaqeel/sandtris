@@ -1,7 +1,9 @@
 #include "Game.h"
+#include <optional>
+
 
 Game::Game()
-    : window(sf::VideoMode(800, 600), "Sandtris"),
+    : window(sf::VideoMode({800, 600}), "Sandtris"),
       isRunning(true),
       currentState(GameState::MainMenu),
       currentDifficulty(1)
@@ -12,6 +14,7 @@ Game::Game()
     activeBlock = new Tetromino(4, 0);
     ui = new UIManager();
 }
+
 
 Game::~Game()
 {
@@ -32,20 +35,20 @@ void Game::run()
 
 void Game::processEvents()
 {
-    sf::Event event;
-
-    while (window.pollEvent(event))
+    while (const std::optional event = window.pollEvent())
     {
-        if (event.type == sf::Event::Closed)
+        // Close window
+        if (event->is<sf::Event::Closed>())
             window.close();
 
-        if (event.type == sf::Event::KeyPressed)
+        // Keyboard input
+        if (const auto* key = event->getIf<sf::Event::KeyPressed>())
         {
-            if (event.key.code == sf::Keyboard::Escape)
+            if (key->code == sf::Keyboard::Key::Escape)
                 window.close();
 
-            // State control
-            if (event.key.code == sf::Keyboard::Enter)
+            // ENTER → Start / Restart
+            if (key->code == sf::Keyboard::Key::Enter)
             {
                 if (currentState == GameState::MainMenu)
                     currentState = GameState::Playing;
@@ -53,7 +56,8 @@ void Game::processEvents()
                     currentState = GameState::MainMenu;
             }
 
-            if (event.key.code == sf::Keyboard::P)
+            // P → Pause toggle
+            if (key->code == sf::Keyboard::Key::P)
             {
                 if (currentState == GameState::Playing)
                     currentState = GameState::Paused;
@@ -62,42 +66,55 @@ void Game::processEvents()
             }
         }
 
-        // Only pass input when playing
+        //Pass input to Tetromino 
         if (currentState == GameState::Playing)
         {
-            activeBlock->handleInput(event);
+            activeBlock->handleInput(*event);
         }
     }
 }
 
+// Update Logic
 void Game::update()
 {
     if (currentState != GameState::Playing)
         return;
 
-    // Update tetromino
+    // Update falling block
     activeBlock->update(playfield);
 
-    // Clear lines and update score
+    // Check if block landed
+    if (activeBlock->hasLanded)
+    {
+        delete activeBlock;
+        activeBlock = new Tetromino(4, 0);
+    }
+
+    // Sand physics
+    playfield->updatePhysics();
+
+    // Line clearing
     int cleared = playfield->clearLines();
     if (cleared > 0)
     {
         ui->addScore(cleared * 100);
     }
 
+    // Game Over condition
     if (playfield->getParticleId(4, 0) != 0)
     {
         currentState = GameState::GameOver;
     }
 }
 
+// Rendering
 void Game::render()
 {
     window.clear();
 
     if (currentState == GameState::MainMenu)
     {
-         ui->renderMenu(window);
+        // Marryam ka part UI wala
     }
     else if (currentState == GameState::Playing)
     {
@@ -110,11 +127,13 @@ void Game::render()
         playfield->draw(window);
         activeBlock->draw(window);
         ui->renderUI(window);
+        // Optional pause overlay
     }
     else if (currentState == GameState::GameOver)
     {
         playfield->draw(window);
         ui->renderUI(window);
+        // Optional game over screen
     }
 
     window.display();
