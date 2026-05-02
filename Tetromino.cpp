@@ -10,7 +10,7 @@ sf::Color getRandomPastelColor(int limit)
         sf::Color(0, 255, 255),   // Cyan
         sf::Color(255, 255, 0),   // Yellow
         sf::Color(255, 0, 128),   // Pink
-        sf::Color(57, 255, 20) 
+        sf::Color(57, 255, 20)  // green
     };
     return pastels[rand() % limit];
 }

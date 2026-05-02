@@ -21,7 +21,7 @@ public:
     int clearLines();
     void updateTimers(float dt);
     bool checkGameOver() const;
-    void draw(sf::RenderWindow& window) override; // override the gameobject draw function this function will callled
+    void draw(sf::RenderWindow& window) override; // override the gameobject draw function this function will called
 };
 
 #endif
