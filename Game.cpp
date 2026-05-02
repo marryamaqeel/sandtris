@@ -11,9 +11,9 @@ Game::Game()
     window.setFramerateLimit(60);
 
     playfield = new grid(150,125);
+    currentDifficulty = 2;
     activeBlock = new Tetromino(currentDifficulty);
     ui = new UIManager();
-    currentDifficulty = 2;
     currentState = GameState::MainMenu;
 }
 

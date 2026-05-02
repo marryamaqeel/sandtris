@@ -212,4 +212,4 @@ bool grid::checkGameOver() const
         }
     }
     return false; // We are safe
-}
+} 
