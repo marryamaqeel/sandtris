@@ -14,6 +14,7 @@ UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText
     if (!sandBuffer.loadFromFile("assets/sand.wav"))
     {
         std::cerr<< "Error loading sand sound\n";
+        sandSound.setVolume(100.0f);
     }
 
     if (!gameOverMusic.openFromFile("assets/game over.ogg")) 
@@ -26,11 +27,11 @@ UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText
     }
 
     clearSound.setBuffer(clearbuffer);
-    clearSound.setVolume(50);
+    clearSound.setVolume(50.0f);
 
     sandSound.setBuffer(sandBuffer);
     menuMusic.setLooping(true);
-    menuMusic.setVolume(100.f);
+    menuMusic.setVolume(100.0f);
     menuMusic.play();
 
     // load font files
@@ -279,10 +280,15 @@ void UIManager::updateHighScoreDisplay(int difficulty)
 
 void UIManager::playSandSound() 
 { 
-    float randomPitch = 0.8f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (1.2f - 0.8f)));
+    if (sandSound.getStatus() == sf::Sound::Status::Playing) {
+        sandSound.stop();
+    }
+
+    // Add a tiny random pitch shift (makes it sound more like real sand!)
+    float pitch = 0.9f + static_cast<float>(rand() % 20) / 100.0f; 
+    sandSound.setPitch(pitch);
+    sandSound.setVolume(100);
     
-    sandSound.setPitch(randomPitch); // Makes it sound slightly different every time!
-    sandSound.setVolume(60.0f);
     sandSound.play(); 
 }
 void UIManager::stopAllMusic() 

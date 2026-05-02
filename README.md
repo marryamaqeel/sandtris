@@ -45,7 +45,6 @@ Unlike traditional Tetris, Sandtris uses a **Breadth-First Search (BFS)** algori
 ### Pause / Game Over
 *   **Enter (Game Over):** Quick Restart.
 *   **ESC (Game Over):** Return to Main Menu.
-*   **M (Paused):** Return to Main Menu.
 
 ---
 

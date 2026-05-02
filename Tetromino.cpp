@@ -57,7 +57,7 @@ void Tetromino::update(grid* playfield,int difficulty,UIManager* ui)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) 
     {
-        fallTimer += 20; // Massive boost to the timer to trigger falling every frame!
+        fallTimer += 20;
     }
 
     fallTimer++;
@@ -89,21 +89,22 @@ void Tetromino::update(grid* playfield,int difficulty,UIManager* ui)
 
 void Tetromino::shatter(grid* playfield,int difficulty,UIManager* ui)
 {
+
     auto varyColor = [](sf::Color base)
     {
         int r = base.r + (rand() % 21 - 10);
         int g = base.g + (rand() % 21 - 10);
         int b = base.b + (rand() % 21 - 10);
-
+        
         r = std::clamp(r, 0, 255);
         g = std::clamp(g, 0, 255);
         b = std::clamp(b, 0, 255);
-
+        
         return sf::Color(r, g, b);
     };
-
+    
     int BLOCK_SCALE = 8;
-
+    
     for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++)
     {
         for (int shapeX = 0; shapeX < currentShape->getSize(); shapeX++)
@@ -122,7 +123,6 @@ void Tetromino::shatter(grid* playfield,int difficulty,UIManager* ui)
         }
         
     }
-
     ui->playSandSound();
     delete currentShape;
     currentShape = new Shape(rand() % 7);
