@@ -64,7 +64,7 @@ This project was developed as a collaborative Object-Oriented Programming Final 
 ## 🚀 Build and Run
 
 ### Prerequisites
-*   **SFML 3.x** Library.
+*   **SFML 3.0.2** Library.
 *   C++17 compatible compiler (MinGW-w64 recommended for Windows).
 
 ### Compilation
