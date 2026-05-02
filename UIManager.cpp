@@ -1,8 +1,39 @@
 #include "UIManager.hpp"
 #include <iostream>
 
-UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText(font, "", 30) ,easyText(font, "", 30) , medText(font, "", 30) , HardText(font, "", 30) ,titleText(font, "", 30)
+UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText(font, "", 30) ,
+                        easyText(font, "", 30) , medText(font, "", 30) , HardText(font, "", 30),
+                        titleText(font, "", 30) , sandSound(sandBuffer) , clearSound(clearbuffer)
 {
+    // load  sound files
+    if (!menuMusic.openFromFile("assets/main_menu.ogg"))
+    {
+        std::cerr << "error loading music\n";
+    }
+
+    if (!sandBuffer.loadFromFile("assets/sand.wav"))
+    {
+        std::cerr<< "Error loading sand sound\n";
+    }
+
+    if (!gameOverMusic.openFromFile("assets/game over.ogg")) 
+    {
+        std::cerr << "Error loading game over music\n";
+    }
+    if (!clearbuffer.loadFromFile("assets/line clear.wav"))
+    {
+        std::cerr << "error loading clear line\n";
+    }
+
+    clearSound.setBuffer(clearbuffer);
+    clearSound.setVolume(50);
+
+    sandSound.setBuffer(sandBuffer);
+    menuMusic.setLooping(true);
+    menuMusic.setVolume(100.f);
+    menuMusic.play();
+
+    // load font files
     if (!font.openFromFile("assets/NeonFont.ttf"))
     {
         std::cerr << "ERROR: Could not load NeonFont.ttf!\n";
@@ -242,4 +273,35 @@ void UIManager::updateHighScoreDisplay(int difficulty)
 {
     int index = difficulty - 2;
     highScoreText.setString("High Score: " + std::to_string(highScore[index]));
+}
+
+// sound
+
+void UIManager::playSandSound() 
+{ 
+    float randomPitch = 0.8f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (1.2f - 0.8f)));
+    
+    sandSound.setPitch(randomPitch); // Makes it sound slightly different every time!
+    sandSound.setVolume(60.0f);
+    sandSound.play(); 
+}
+void UIManager::stopAllMusic() 
+{ 
+    menuMusic.stop(); 
+    gameOverMusic.stop(); 
+}
+void UIManager::startMenuMusic() 
+{ 
+    stopAllMusic(); 
+    menuMusic.play(); 
+}
+void UIManager::playGameOverMusic() 
+{ 
+    stopAllMusic(); 
+    gameOverMusic.play(); 
+}
+
+void UIManager::playClearSounnd()
+{
+    clearSound.play();
 }

@@ -3,6 +3,7 @@
 #include "GameObject.hpp"
 #include "grid.hpp"
 #include "Shape.hpp"
+#include "UIManager.hpp"
 #include<SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
@@ -16,8 +17,8 @@ private:
 public:
     Tetromino(int difficulty);
     ~Tetromino();
-    void update(grid* playfield,int difficulty);
-    void shatter(grid* playfield,int difficulty);
+    void update(grid* playfield,int difficulty,UIManager* ui);
+    void shatter(grid* playfield,int difficulty, UIManager* ui);
     void draw(sf::RenderWindow& window) override;
     void handleInput(const sf::Event& event,grid* playfield);
 };

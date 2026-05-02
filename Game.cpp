@@ -51,6 +51,7 @@ void Game::processEvents()
                     
                     if (diff > 0) // If they clicked a valid button!
                     {
+                        ui->stopAllMusic();
                         currentDifficulty = diff;
                         ui->updateHighScoreDisplay(currentDifficulty);
                         
@@ -113,6 +114,7 @@ void Game::processEvents()
                     playfield = new grid(150,125);
                     activeBlock = new Tetromino(currentDifficulty);
                     ui->resetScore();
+                    ui->startMenuMusic();
                     currentState = GameState::MainMenu; // Switch state!
                 }
             }
@@ -127,7 +129,7 @@ void Game::update()
     if(currentState == GameState::Playing)
     {
         float dt = deltaClock.restart().asSeconds();
-        activeBlock->update(playfield,currentDifficulty);
+        activeBlock->update(playfield,currentDifficulty,ui);
         playfield->updatePhysics();
         playfield->updateTimers(dt);
     
@@ -135,11 +137,13 @@ void Game::update()
         if (line > 0)
         {
             ui->addScore(line * 10, currentDifficulty);
+            ui->playClearSounnd();
         }
 
         if (playfield->checkGameOver() == true) 
         {
             ui->saveHighScore(currentDifficulty);
+            ui->playGameOverMusic();
             currentState = GameState::GameOver;
         }
     }

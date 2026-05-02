@@ -51,7 +51,7 @@ void Tetromino::draw(sf::RenderWindow& window)
     }
 }
 
-void Tetromino::update(grid* playfield,int difficulty)
+void Tetromino::update(grid* playfield,int difficulty,UIManager* ui)
 {
     int BLOCK_SCALE = 8;
     fallTimer++;
@@ -69,7 +69,7 @@ void Tetromino::update(grid* playfield,int difficulty)
                         int checkY = getY() + (shapeY * BLOCK_SCALE) + BLOCK_SCALE; // +SCALE puts us exactly 1 pixel below the block
 
                         if (playfield->getParticleID(checkX, checkY) == 1 || playfield->getParticleID(checkX, checkY) == 2) {
-                            shatter(playfield,difficulty);
+                            shatter(playfield,difficulty,ui);
                             return;
                         }
                     }
@@ -81,7 +81,7 @@ void Tetromino::update(grid* playfield,int difficulty)
     }
 }
 
-void Tetromino::shatter(grid* playfield,int difficulty)
+void Tetromino::shatter(grid* playfield,int difficulty,UIManager* ui)
 {
     auto varyColor = [](sf::Color base)
     {
@@ -117,6 +117,7 @@ void Tetromino::shatter(grid* playfield,int difficulty)
         
     }
 
+    ui->playSandSound();
     delete currentShape;
     currentShape = new Shape(rand() % 7);
     baseColor = getRandomPastelColor(difficulty);
