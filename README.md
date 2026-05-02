@@ -60,3 +60,10 @@ Open your terminal in the project directory and run:
 ```bash
 mingw32-make clean
 mingw32-make
+
+
+## 👥 The Team
+*   **[Marryam Aqeel] (Group Lead)**: UI Architecture, High Score Persistent Data, Dynamic Difficulty Scaling, Sound Engine Integration, and BFS Optimization.
+*   **[Emaan Arif]**: Physics Engine Development & Particle Logic (`Grid` & `Particle` classes).
+*   **[Mahlaka Yaseen]**: Tetromino Matrix Logic & Shape Generation (`Tetromino` & `Shape` classes).
+*   **[M.Mohid Hassan]**: Core Game Loop & Abstract Architecture (`Game` & `GameObject` classes).
