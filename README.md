@@ -36,11 +36,10 @@ Unlike traditional Tetris, Sandtris uses a custom **Breadth-First Search (BFS)**
 
 ### Main Menu
 *   **Mouse Click:** Select Difficulty (Easy: 2 Colors, Medium: 3 Colors, Hard: 4 Colors).
-*   **Keyboard 1, 2, 3:** Difficulty shortcuts.
 
 ### Gameplay
 *   **Left / Right Arrows:** Move the falling block.
-*   **Up Arrow / Space:** Rotate the block 90 degrees.
+*   **Space:** Rotate the block 90 degrees.
 *   **Down Arrow (Hold):** Smooth Fast-Fall.
 *   **ESC:** Pause the game.
 
