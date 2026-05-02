@@ -2,21 +2,23 @@
 #include <SFML/Graphics.hpp>
 #include "GameObject.h"
 #include "Shape.h"
-#include "Grid.h"
+#include "grid.hpp"
+#include "UIManager.h"
 
 class Tetromino : public GameObject
 {
-public:
-    Tetromino();
-    ~Tetromino();
-
-    void handleInput(const sf::Event& event, Grid* playfield);
-    void update(Grid* playfield);
-    void shatter(Grid* playfield);
-    void draw(sf::RenderWindow& window);
-
 private:
     Shape*    currentShape;
     sf::Color baseColor;
-    float     fallTimer;
+    sf::Color color;
+    int     fallTimer;
+public:
+    Tetromino(int difficulty);
+    ~Tetromino();
+
+    void handleInput(const sf::Event& event, grid* playfield);
+    void update(grid* playfield, int difficulty, UIManager* ui);
+    void shatter(grid* playfield , int difficulty, UIManager* ui);
+    void draw(sf::RenderWindow& window) override;
+
 };

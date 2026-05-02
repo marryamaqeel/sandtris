@@ -2,30 +2,27 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <algorithm>
+#include "grid.hpp"
 
 
-sf::Color getShapeColor()
+sf::Color getShapeColor(int limit) 
 {
-    sf::Color colors[5] =
-    {
-        sf::Color(0,   255, 255),  // cyan
-        sf::Color(255, 255, 0  ),  // yellow
-        sf::Color(160, 32,  240),  // purple
-        sf::Color(57,  255, 20 ),  // green
-        sf::Color(255, 20,  20 ),  // red
+    sf::Color pastels[4] = {
+        sf::Color(0, 255, 255),   // Cyan
+        sf::Color(255, 255, 0),   // Yellow
+        sf::Color(255, 0, 128),   // Pink
+        sf::Color(57, 255, 20)  // green
     };
-    return colors[rand() % 5];
+    return pastels[rand() % limit];
 }
 
 
-Tetromino::Tetromino() : GameObject(60, 0),
-                         currentShape(nullptr),
-                         baseColor(sf::Color(255, 255, 255)),
-                         fallTimer(0.0f)
+Tetromino::Tetromino(int difficulty) : GameObject(64, 0)
 {
     int randomType = rand() % 7;
     currentShape   = new Shape(randomType);
-    baseColor      = getShapeColor();
+    baseColor      = getShapeColor(difficulty);
+    fallTimer = 0;
 }
 
 
@@ -37,113 +34,107 @@ Tetromino::~Tetromino()
 
 
 
-void Tetromino::handleInput(const sf::Event& event, Grid* playfield)
+void Tetromino::handleInput(const sf::Event& event, grid* playfield)
 {
     int BLOCK_SCALE = 8;
-
     if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>())
     {
-        // --- LEFT ---
-        if (keyPressed->code == sf::Keyboard::Key::Left)
+        // --- LEFT ARROW ---
+        if (keyPressed->code == sf::Keyboard::Key::Left) 
         {
-            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++)
+            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++) 
             {
-                for (int shapeX = 0; shapeX < currentShape->getSize(); shapeX++)
+                for (int ShapeX = 0; ShapeX < currentShape->getSize(); ShapeX++) 
                 {
-                    if (currentShape->getPixel(shapeX, shapeY) == 1)
+                    if (currentShape->getPixel(ShapeX,shapeY) == 1) 
                     {
-                        for (int i = 0; i < BLOCK_SCALE; i++)
-                        {
-                            for (int j = 0; j < BLOCK_SCALE; j++)
-                            {
-                                int checkX = getX() + (shapeX * BLOCK_SCALE) - BLOCK_SCALE + i;
+                        // FIX: Added 'i' loop to check the entire 8x8 destination block
+                        for (int i = 0; i < BLOCK_SCALE; i++) {
+                            for (int j = 0; j < BLOCK_SCALE; j++) {
+                                int checkX = getX() + (ShapeX * BLOCK_SCALE) - BLOCK_SCALE + i; 
                                 int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
-
-                                if (playfield->getParticleID(checkX, checkY) != 0)
-                                    return;
+                                
+                                if (playfield->getParticleID(checkX, checkY) != 0) return; 
                             }
                         }
                     }
                 }
             }
-            this->x -= BLOCK_SCALE;
+            this->x -= BLOCK_SCALE; 
         }
 
-        // --- RIGHT ---
+        // --- RIGHT ARROW ---
         if (keyPressed->code == sf::Keyboard::Key::Right)
         {
-            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++)
+            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++) 
             {
-                for (int shapeX = 0; shapeX < currentShape->getSize(); shapeX++)
+                for (int ShapeX = 0; ShapeX < currentShape->getSize(); ShapeX++) 
                 {
-                    if (currentShape->getPixel(shapeX, shapeY) == 1)
+                    if (currentShape->getPixel(ShapeX,shapeY) == 1) 
                     {
-                        for (int i = 0; i < BLOCK_SCALE; i++)
-                        {
-                            for (int j = 0; j < BLOCK_SCALE; j++)
-                            {
-                                int checkX = getX() + (shapeX * BLOCK_SCALE) + BLOCK_SCALE + i;
+                        // FIX: Added 'i' loop to check the entire 8x8 destination block
+                        for (int i = 0; i < BLOCK_SCALE; i++) {
+                            for (int j = 0; j < BLOCK_SCALE; j++) {
+                                int checkX = getX() + (ShapeX * BLOCK_SCALE) + BLOCK_SCALE + i; 
                                 int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
-
-                                if (playfield->getParticleID(checkX, checkY) != 0)
-                                    return;
+                                
+                                if (playfield->getParticleID(checkX, checkY) != 0) return; 
                             }
                         }
                     }
                 }
             }
-            this->x += BLOCK_SCALE;
+           this->x += BLOCK_SCALE; 
         }
-
-        // --- DOWN ---
-        if (keyPressed->code == sf::Keyboard::Key::Down)
+        
+        if (keyPressed->code == sf::Keyboard::Key::Space) 
         {
-            fallTimer = 40.0f;  // force fast drop
-        }
-
-        // --- SPACE (rotate) ---
-        if (keyPressed->code == sf::Keyboard::Key::Space)
-        {
+            // 1. Spin it!
             currentShape->rotateRight();
 
+            // 2. Check if we just spun into a wall or sand
             bool blocked = false;
-
-            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++)
+            for (int shapeY = 0; shapeY < currentShape->getSize(); shapeY++) 
             {
-                for (int shapeX = 0; shapeX < currentShape->getSize(); shapeX++)
+                for (int ShapeX = 0; ShapeX < currentShape->getSize(); ShapeX++) 
                 {
-                    if (currentShape->getPixel(shapeX, shapeY) == 1)
+                    if (currentShape->getPixel(ShapeX, shapeY) == 1) 
                     {
-                        for (int i = 0; i < BLOCK_SCALE; i++)
-                        {
-                            for (int j = 0; j < BLOCK_SCALE; j++)
-                            {
-                                int checkX = getX() + (shapeX * BLOCK_SCALE) + i;
+                        // Check the whole block size
+                        for (int i = 0; i < BLOCK_SCALE; i++) {
+                            for (int j = 0; j < BLOCK_SCALE; j++) {
+                                int checkX = getX() + (ShapeX * BLOCK_SCALE) + i;
                                 int checkY = getY() + (shapeY * BLOCK_SCALE) + j;
-
-                                if (playfield->getParticleID(checkX, checkY) != 0)
+                                
+                                if (playfield->getParticleID(checkX, checkY) != 0) {
                                     blocked = true;
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // undo rotation if blocked
-            if (blocked)
+            // 3. If we hit a wall while spinning, undo the spin!
+            if (blocked) {
                 currentShape->rotateLeft();
+            }
         }
     }
 }
 
-
-void Tetromino::update(Grid* playfield)
+void Tetromino::update(grid* playfield,int difficulty,UIManager* ui)
 {
     int BLOCK_SCALE = 8;
 
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+    {
+        fallTimer+= 20;
+    }
+
     fallTimer++;
 
-    if (fallTimer > 30)
+    if (fallTimer > 1)
     {
         fallTimer = 0;
 
@@ -161,7 +152,7 @@ void Tetromino::update(Grid* playfield)
                         if (playfield->getParticleID(checkX, checkY) == 1 ||
                             playfield->getParticleID(checkX, checkY) == 2)
                         {
-                            shatter(playfield);
+                            shatter(playfield,difficulty,ui);
                             return;
                         }
                     }
@@ -175,7 +166,7 @@ void Tetromino::update(Grid* playfield)
 
 
 
-void Tetromino::shatter(Grid* playfield)
+void Tetromino::shatter(grid* playfield,int difficulty, UIManager* ui)
 {
     int BLOCK_SCALE = 8;
 
@@ -203,27 +194,27 @@ void Tetromino::shatter(Grid* playfield)
                 {
                     for (int j = 0; j < BLOCK_SCALE; j++)
                     {
-                        sf::Color variedColor = varyColor(baseColor);
+                        sf::Color color = varyColor(baseColor);
                         int finalX = getX() + (shapeX * BLOCK_SCALE) + i;
                         int finalY = getY() + (shapeY * BLOCK_SCALE) + j;
 
-                        playfield->setParticle(finalX, finalY, 1, variedColor, baseColor);
+                        playfield->setParticle(finalX, finalY, 1, color,baseColor);
                     }
                 }
             }
         }
     }
 
+    ui->playSandSound();
     // spawn new shape
     delete currentShape;
 
     currentShape = new Shape(rand() % 7);
-    baseColor    = getShapeColor();
+    baseColor    = getShapeColor(difficulty);
     this->x      = 60;
     this->y      = 0;
 }
 
-/
 
 void Tetromino::draw(sf::RenderWindow& window)
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "grid.h"
+#include<SFML/Window.hpp>
+#include "grid.hpp"
 #include "Tetromino.h"
 #include "UIManager.h"
 
@@ -13,7 +14,7 @@ enum class GameState {
 class Game {
 private:
     sf::RenderWindow window;
-    Grid* playfield;
+    grid* playfield;
     Tetromino* activeBlock;
     UIManager* ui;
     bool isRunning;

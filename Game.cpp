@@ -1,16 +1,20 @@
 #include "Game.h"
+#include "grid.hpp"
+#include "UIManager.h"
+#include <SFML/Graphics.hpp>
+
+sf::Clock deltaClock;
 
 Game::Game()
-    : window(sf::VideoMode(800, 600), "Sandtris"),
-      isRunning(true),
-      currentState(GameState::MainMenu),
-      currentDifficulty(1)
+    : window(sf::VideoMode({800, 600}), "Sandtris")
 {
     window.setFramerateLimit(60);
 
-    playfield = new Grid(10, 20);
-    activeBlock = new Tetromino(4, 0);
+    playfield = new grid(150,125);
+    activeBlock = new Tetromino(currentDifficulty);
     ui = new UIManager();
+    currentDifficulty = 2;
+    currentState = GameState::MainMenu;
 }
 
 Game::~Game()
@@ -32,89 +36,148 @@ void Game::run()
 
 void Game::processEvents()
 {
-    sf::Event event;
-
-    while (window.pollEvent(event))
+    while (const std::optional event = window.pollEvent())
     {
-        if (event.type == sf::Event::Closed)
-            window.close();
-
-        if (event.type == sf::Event::KeyPressed)
+        if (event->is<sf::Event::Closed>())
         {
-            if (event.key.code == sf::Keyboard::Escape)
-                window.close();
-
-            // State control
-            if (event.key.code == sf::Keyboard::Enter)
+            window.close();
+        }
+        
+        if (currentState == GameState::MainMenu)
+        {
+            if (const auto* mouseBtn = event->getIf<sf::Event::MouseButtonPressed>()) 
             {
-                if (currentState == GameState::MainMenu)
-                    currentState = GameState::Playing;
-                else if (currentState == GameState::GameOver)
-                    currentState = GameState::MainMenu;
-            }
-
-            if (event.key.code == sf::Keyboard::P)
-            {
-                if (currentState == GameState::Playing)
-                    currentState = GameState::Paused;
-                else if (currentState == GameState::Paused)
-                    currentState = GameState::Playing;
+                if (mouseBtn->button == sf::Mouse::Button::Left) 
+                {
+                    // Pass the mouse position to the UI
+                    int diff = ui->handleMenuClick(mouseBtn->position);
+                    
+                    if (diff > 0) // If they clicked a valid button!
+                    {
+                        ui->stopAllMusic();
+                        currentDifficulty = diff;
+                        ui->updateHighScoreDisplay(currentDifficulty);
+                        
+                        // Delete the old block and spawn a NEW one with the correct difficulty!
+                        delete activeBlock;
+                        activeBlock = new Tetromino(currentDifficulty);
+                        
+                        deltaClock.restart();
+                        currentState = GameState::Playing;
+                    }
+                }
             }
         }
 
-        // Only pass input when playing
-        if (currentState == GameState::Playing)
+        else if (currentState == GameState::Playing)
         {
-            activeBlock->handleInput(event);
+            if (event->is<sf::Event::KeyPressed>())
+            {
+                const auto* key = event->getIf<sf::Event::KeyPressed>();
+
+                if (key->code == sf::Keyboard::Key::Escape)
+                {
+                    currentState = GameState::Paused;
+                }
+            }
+
+            activeBlock->handleInput(event.value(),playfield);
+        }
+
+        else if(currentState == GameState::Paused)
+        {
+            if (event->is<sf::Event::KeyPressed>()) {
+                const auto* key = event->getIf<sf::Event::KeyPressed>();
+                if (key->code == sf::Keyboard::Key::Escape) {
+                    deltaClock.restart();
+                    currentState = GameState::Playing;
+                }
+            }
+        }
+
+        else if (currentState == GameState::GameOver)
+        {
+            if (event->is<sf::Event::KeyPressed>())
+            {
+                const auto* key = event->getIf<sf::Event::KeyPressed>();
+
+                if (key->code == sf::Keyboard::Key::Enter)
+                {
+                    delete playfield;
+                    delete activeBlock;
+                    playfield = new grid(150,125);
+                    activeBlock = new Tetromino(currentDifficulty);
+                    ui->resetScore();
+
+                    currentState = GameState::Playing;
+                }
+                else if (key->code == sf::Keyboard::Key::Escape) {
+                    // GO BACK TO MAIN MENU!
+                    delete playfield; delete activeBlock;
+                    playfield = new grid(150,125);
+                    activeBlock = new Tetromino(currentDifficulty);
+                    ui->resetScore();
+                    ui->startMenuMusic();
+                    currentState = GameState::MainMenu; // Switch state!
+                }
+            }
+            
         }
     }
+    
 }
 
 void Game::update()
 {
-    if (currentState != GameState::Playing)
-        return;
-
-    // Update tetromino
-    activeBlock->update(playfield);
-
-    // Clear lines and update score
-    int cleared = playfield->clearLines();
-    if (cleared > 0)
+    if(currentState == GameState::Playing)
     {
-        ui->addScore(cleared * 100);
-    }
+        float dt = deltaClock.restart().asSeconds();
+        activeBlock->update(playfield,currentDifficulty,ui);
+        playfield->updatePhysics();
+        playfield->updateTimers(dt);
+    
+        int line = playfield->clearLines();
+        if (line > 0)
+        {
+            ui->addScore(line * 10, currentDifficulty);
+            ui->playClearSounnd();
+        }
 
-    if (playfield->getParticleId(4, 0) != 0)
-    {
-        currentState = GameState::GameOver;
+        if (playfield->checkGameOver() == true) 
+        {
+            ui->saveHighScore(currentDifficulty);
+            ui->playGameOverMusic();
+            currentState = GameState::GameOver;
+        }
     }
 }
 
+
 void Game::render()
 {
-    window.clear();
+
+    window.clear(sf::Color(30,15,50));
 
     if (currentState == GameState::MainMenu)
     {
-         ui->renderMenu(window);
+         ui->renderMainMenu(window);
     }
     else if (currentState == GameState::Playing)
     {
         playfield->draw(window);
         activeBlock->draw(window);
-        ui->renderUI(window);
+        ui->renderGameplayUI(window);
     }
     else if (currentState == GameState::Paused)
     {
         playfield->draw(window);
         activeBlock->draw(window);
-        ui->renderUI(window);
+        ui->renderGameplayUI(window);
+        ui->renderPause(window);
     }
     else if (currentState == GameState::GameOver)
     {
-        playfield->draw(window);
-        ui->renderUI(window);
+        ui->renderGameOver(window,currentDifficulty);
     }
 
     window.display();

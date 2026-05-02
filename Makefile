@@ -4,7 +4,7 @@ CXX      := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -O2 
 
 # SFML Linker flags
-LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system
+LDFLAGS  := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 # --- OS Detection & Specific Settings ---
 ifeq ($(OS),Windows_NT)
