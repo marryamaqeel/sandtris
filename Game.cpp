@@ -17,6 +17,7 @@ Game::Game()
     currentState = GameState::MainMenu;
 }
 
+
 Game::~Game()
 {
     delete playfield;
@@ -127,6 +128,7 @@ void Game::processEvents()
     
 }
 
+// Update Logic
 void Game::update()
 {
     if(currentState == GameState::Playing)
