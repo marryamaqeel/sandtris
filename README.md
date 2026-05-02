@@ -38,7 +38,7 @@ Unlike traditional Tetris, Sandtris uses a **Breadth-First Search (BFS)** algori
 
 ### Gameplay
 *   **Left / Right Arrows:** Move the falling block.
-*   **Up Arrow / Space:** Rotate the block 90 degrees.
+*   **Space:** Rotate the block 90 degrees.
 *   **Down Arrow (Hold):** Smooth Fast-Fall.
 *   **ESC:** Pause the game.
 
