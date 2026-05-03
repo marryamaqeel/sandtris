@@ -283,8 +283,6 @@ void UIManager::playSandSound()
     if (sandSound.getStatus() == sf::Sound::Status::Playing) {
         sandSound.stop();
     }
-
-    // Add a tiny random pitch shift (makes it sound more like real sand!)
     float pitch = 0.9f + static_cast<float>(rand() % 20) / 100.0f; 
     sandSound.setPitch(pitch);
     sandSound.setVolume(100);
