@@ -244,7 +244,7 @@ void UIManager::resetScore()
 void UIManager::renderPause(sf::RenderWindow &window)
 {
     sf::RectangleShape overlay;
-    overlay.setSize(sf::Vector2f({window.getSize().x, window.getSize().y}));
+    overlay.setSize(sf::Vector2f({static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y)}));
     overlay.setFillColor(sf::Color(0, 0, 0, 150));
     window.draw(overlay);
 
