@@ -72,3 +72,7 @@ Open your terminal in the project directory and run:
 ```bash
 mingw32-make clean
 mingw32-make
+```
+
+## 🔗 Repository Link
+[Click here to view the project](https://github.com/marryamaqeel/sandtris)
