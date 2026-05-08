@@ -115,9 +115,9 @@ int grid::clearLines()
 
     std::vector<std::vector<bool>> visited(width, std::vector<bool>(height, false)); // every pixel on grid is false
 
-    // Directions for checking neighbors (Up, Down, Left, Right)
-    int dirX[] = {0, 0, -1, 1}; 
-    int dirY[] = {-1, 1, 0, 0};
+    // Directions for checking neighbors (Up, Down, Left, Right and diagonals)
+    int dirX[] = {0, 0, -1, 1, -1, 1, -1, 1}; 
+    int dirY[] = {-1, 1, 0, 0, -1, -1, 1, 1};
 
     for (int y = 0; y < height; y++)
     {
@@ -152,7 +152,7 @@ int grid::clearLines()
                 // If this particle is on the right edge, mark true
                 if (curr.x == width - 1) touchesRightWall = true;
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     int nx = curr.x + dirX[i];
                     int ny = curr.y + dirY[i];
