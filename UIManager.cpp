@@ -75,8 +75,7 @@ UIManager::UIManager() : currentScore(0), scoreText(font, "", 30), highScoreText
     titleText.setStyle(sf::Text::Bold);
 
     sf::FloatRect titleBounds = titleText.getLocalBounds();
-    titleText.setOrigin({titleBounds.position.x + titleBounds.size.x / 2.0f, 
-                         titleBounds.position.y + titleBounds.size.y / 2.0f});
+    titleText.setOrigin({titleBounds.position.x + titleBounds.size.x / 2.0f, titleBounds.position.y + titleBounds.size.y / 2.0f});
     titleText.setPosition({400.0f, 120.0f});
 
 
@@ -217,8 +216,7 @@ void UIManager::renderGameOver(sf::RenderWindow &window , int difficulty)
     sf::Text finalScoreText(font, "FINAL SCORE: " + std::to_string(currentScore), 40);
     finalScoreText.setFillColor(sf::Color::White);
     sf::FloatRect bounds2 = finalScoreText.getLocalBounds();
-    finalScoreText.setOrigin({bounds2.position.x + (bounds2.size.x / 2.0f),
-                              bounds2.position.y + (bounds2.size.y / 2.0f)});
+    finalScoreText.setOrigin({bounds2.position.x + (bounds2.size.x / 2.0f), bounds2.position.y + (bounds2.size.y / 2.0f)});
     // Place slightly BELOW the center
     finalScoreText.setPosition({window.getSize().x / 2.0f, (window.getSize().y / 2.0f) + 40.0f});
 
